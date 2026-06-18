@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sort It — A Citizen's Guide to Waste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F5EF; --paper2:#FFFFFF; --ink:#19241D; --ink-soft:#4A5650; --line:#E2E0D4;
+  --wet:#2F8F4E; --dry:#1F6FB2; --sanitary:#C0392B; --donate:#D98A1E; --ewaste:#6D4AC2;
+  --garden:#5BA84B; --cnd:#7A6A55; --thermocol:#1F9E8F; --coconut:#9A5B2E; --special:#6B7280;
+  --hazard:#B0341F;
+  --shadow:0 1px 2px rgba(25,36,29,.05), 0 8px 24px rgba(25,36,29,.07);
+  --shadow-lg:0 10px 40px rgba(25,36,29,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{font-family:'Bricolage Grotesque','Inter',sans-serif; line-height:1.05; letter-spacing:-.02em;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+a{color:inherit}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(246,245,239,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:14px;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Bricolage Grotesque';font-weight:800;font-size:20px;cursor:pointer;letter-spacing:-.02em}
+.brand .glyph{width:30px;height:30px;border-radius:9px;background:var(--wet);position:relative;flex:none}
+.brand .glyph::before,.brand .glyph::after{content:'';position:absolute;border-radius:3px}
+.brand .glyph::before{inset:7px auto auto 7px;width:7px;height:16px;background:#fff;opacity:.95}
+.brand .glyph::after{inset:7px 7px auto auto;width:7px;height:16px;background:#fff;opacity:.6}
+.topnav{margin-left:auto;display:flex;gap:6px}
+.topnav button{font:inherit;font-weight:600;font-size:14px;color:var(--ink-soft);background:none;border:0;padding:8px 12px;border-radius:9px;cursor:pointer}
+.topnav button:hover{background:#fff;color:var(--ink)}
+
+/* ---------- hero ---------- */
+.hero{padding:54px 0 30px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(38px,6.4vw,68px);font-weight:800;max-width:14ch;margin:0 0 14px}
+.hero h1 em{font-style:normal;color:var(--wet)}
+.hero p.lead{font-size:clamp(17px,2.2vw,20px);color:var(--ink-soft);max-width:54ch;margin:0 0 26px}
+/* search */
+.searchbox{position:relative;max-width:640px}
+.searchbox .field{display:flex;align-items:center;gap:12px;background:var(--paper2);border:2px solid var(--ink);border-radius:16px;padding:6px 8px 6px 18px;box-shadow:var(--shadow)}
+.searchbox.focused .field{border-color:var(--wet);box-shadow:0 0 0 4px rgba(47,143,78,.14)}
+.searchbox svg{flex:none}
+.searchbox input{flex:1;border:0;outline:0;background:none;font:inherit;font-size:18px;padding:12px 0;color:var(--ink)}
+.searchbox input::placeholder{color:#9aa39c}
+.searchbox .clr{border:0;background:#EEF0EA;width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:18px;color:var(--ink-soft);display:none}
+.searchbox.has .clr{display:block}
+.suggest{position:absolute;left:0;right:0;top:calc(100% + 8px);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-lg);overflow:hidden;display:none;z-index:30;max-height:60vh;overflow-y:auto}
+.suggest.show{display:block}
+.suggest .row{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;border-bottom:1px solid #F1F0E8}
+.suggest .row:last-child{border-bottom:0}
+.suggest .row:hover,.suggest .row.active{background:#F4F6F0}
+.suggest .ico{font-size:22px;width:30px;text-align:center;flex:none}
+.suggest .nm{font-weight:600;flex:1;font-size:15px}
+.suggest .bn{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 8px;border-radius:999px;color:#fff}
+.suggest .empty{padding:18px 16px;color:var(--ink-soft);font-size:14px}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
+.quick span{font-size:13px;color:var(--ink-soft);font-weight:600}
+.quick button{font:inherit;font-size:13px;font-weight:600;background:#fff;border:1px solid var(--line);padding:6px 13px;border-radius:999px;cursor:pointer}
+.quick button:hover{border-color:var(--ink);}
+
+/* ---------- sections ---------- */
+section{padding:30px 0}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--wet);margin:0 0 8px}
+.s-head h2{font-size:clamp(26px,3.6vw,36px);font-weight:700;margin:0 0 8px}
+.s-head p{color:var(--ink-soft);max-width:60ch;margin:0}
+
+/* why grid */
+.why{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.why .card{background:var(--paper2);border:1px solid var(--line);border-radius:16px;padding:22px}
+.why .card .big{font-family:'Bricolage Grotesque';font-weight:800;font-size:40px;line-height:1;color:var(--wet);margin-bottom:8px}
+.why .card h3{font-size:17px;margin:0 0 6px}
+.why .card p{margin:0;font-size:14.5px;color:var(--ink-soft)}
+
+/* bin legend (signature) */
+.legend{margin-top:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.bin{position:relative;border-radius:16px;padding:18px 18px 20px;color:#fff;cursor:pointer;overflow:hidden;min-height:128px;display:flex;flex-direction:column;transition:transform .15s ease, box-shadow .15s ease;border:0}
+.bin:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.bin .lid{position:absolute;top:0;left:0;right:0;height:8px;background:rgba(255,255,255,.4)}
+.bin .ic{font-size:30px;margin-bottom:auto}
+.bin .nm{font-family:'Bricolage Grotesque';font-weight:800;font-size:19px;margin-top:8px}
+.bin .ds{font-size:12.5px;opacity:.92;margin-top:2px;line-height:1.35}
+.bin .ct{position:absolute;top:16px;right:16px;font-size:12px;font-weight:700;background:rgba(0,0,0,.18);padding:3px 9px;border-radius:999px}
+
+/* browse grid (full) */
+.browse-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px}
+
+/* swach band */
+.swach{background:var(--ink);color:#EDEFE9;border-radius:22px;padding:38px;display:grid;grid-template-columns:1.3fr 1fr;gap:34px;align-items:center}
+.swach .eyebrow{color:#7FD89A}
+.swach h2{color:#fff;font-size:30px;margin:0 0 12px}
+.swach p{color:#C5CCC4;margin:0 0 12px;font-size:15px}
+.reddot{display:inline-flex;align-items:center;gap:10px;background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.5);padding:12px 16px;border-radius:14px;font-weight:600;font-size:14px;color:#fff}
+.reddot b{width:16px;height:16px;border-radius:999px;background:var(--sanitary);flex:none;display:inline-block}
+.swach .stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px}
+.swach .stat .n{font-family:'Bricolage Grotesque';font-weight:800;font-size:34px;color:#7FD89A;line-height:1}
+.swach .stat .l{font-size:13.5px;color:#C5CCC4;margin-top:6px}
+.swach .stat + .stat{margin-top:12px}
+
+/* footer */
+footer{padding:30px 0 50px;color:var(--ink-soft);font-size:13.5px;border-top:1px solid var(--line);margin-top:20px}
+footer b{color:var(--ink)}
+
+/* ---------- browse view ---------- */
+.view{display:none}
+.view.active{display:block}
+.backbtn{display:inline-flex;align-items:center;gap:7px;font:inherit;font-weight:600;font-size:14px;background:#fff;border:1px solid var(--line);padding:8px 14px;border-radius:10px;cursor:pointer;margin:24px 0 4px}
+.backbtn:hover{border-color:var(--ink)}
+.cat-hero{border-radius:20px;padding:26px;color:#fff;margin:14px 0 8px;position:relative;overflow:hidden}
+.cat-hero h2{font-size:32px;margin:0 0 6px;color:#fff}
+.cat-hero p{margin:0;opacity:.94;max-width:60ch;font-size:15px}
+.cat-hero .ic{font-size:44px;position:absolute;top:22px;right:26px;opacity:.9}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+.chip{font:inherit;font-size:13px;font-weight:600;background:#fff;border:1px solid var(--line);padding:7px 14px;border-radius:999px;cursor:pointer}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.item{background:var(--paper2);border:1px solid var(--line);border-left:5px solid var(--special);border-radius:14px;padding:16px;cursor:pointer;transition:transform .12s,box-shadow .12s;text-align:left}
+.item:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.item .top{display:flex;align-items:flex-start;gap:11px}
+.item .ico{font-size:26px;flex:none}
+.item .nm{font-weight:700;font-size:15px;line-height:1.25}
+.item .meta{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.02em}
+.b-good{background:#E3F4E9;color:#1E6B38}
+.b-warn{background:#FCEFD9;color:#9A5B12}
+.b-bad{background:#FBE3DF;color:#B0341F}
+.b-neutral{background:#ECEEE9;color:#525B53}
+.binpill{font-size:11px;font-weight:700;color:#fff;padding:3px 9px;border-radius:999px}
+
+/* result count line */
+.rescount{color:var(--ink-soft);font-size:14px;margin:0 0 14px;font-weight:500}
+
+/* ---------- modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(20,30,24,.5);backdrop-filter:blur(3px);z-index:60;display:none;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex}
+@media(min-width:720px){.overlay{align-items:center;padding:24px}}
+.modal{background:var(--paper);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;border-radius:22px 22px 0 0;box-shadow:var(--shadow-lg)}
+@media(min-width:720px){.modal{border-radius:22px}}
+.modal .mhead{padding:26px 26px 22px;color:#fff;position:relative}
+.modal .mhead .ic{font-size:46px}
+.modal .mhead h3{font-size:26px;margin:10px 0 8px;color:#fff;line-height:1.1}
+.modal .mhead .pills{display:flex;flex-wrap:wrap;gap:7px}
+.modal .mhead .pill{font-size:12px;font-weight:700;background:rgba(255,255,255,.22);padding:4px 11px;border-radius:999px}
+.modal .close{position:absolute;top:18px;right:18px;width:36px;height:36px;border-radius:10px;border:0;background:rgba(0,0,0,.18);color:#fff;font-size:20px;cursor:pointer}
+.mbody{padding:22px 26px 30px}
+.block{margin-bottom:20px}
+.block:last-child{margin-bottom:0}
+.block .lab{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 9px;display:flex;align-items:center;gap:7px}
+.steps{margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:10px 12px 10px 44px;background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;font-size:15px;font-weight:500}
+.steps li::before{content:counter(s);position:absolute;left:11px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:7px;background:var(--wet);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque'}
+.donots{margin:0;padding:0;list-style:none}
+.donots li{display:flex;gap:10px;align-items:flex-start;background:#FBE3DF;border:1px solid #F3C9C2;border-radius:11px;padding:10px 13px;margin-bottom:8px;font-size:14.5px;font-weight:500;color:#7d2317}
+.donots li .x{font-weight:800;flex:none}
+.notebox{background:#FFF8E8;border:1px solid #F0E1B8;border-radius:12px;padding:13px 15px;font-size:14.5px;color:#6b5410}
+.afterbox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px;font-size:14.5px}
+.afterbox b{color:var(--wet)}
+.contactbox{display:flex;align-items:center;gap:11px;background:#EAF1F8;border:1px solid #C9DCEE;border-radius:12px;padding:13px 15px;font-size:14.5px;font-weight:600;color:#16517f}
+.contactbox .ph{font-size:20px}
+
+@media(max-width:860px){
+  .why,.legend,.browse-grid{grid-template-columns:repeat(2,1fr)}
+  .swach{grid-template-columns:1fr;padding:26px}
+}
+@media(max-width:520px){
+  .why{grid-template-columns:1fr}
+  .topnav button:not(.nav-browse){display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <div class="brand" onclick="goHome()"><span class="glyph"></span>Sort&nbsp;It</div>
+  <nav class="topnav">
+    <button onclick="goHome();scrollToId('why')">Why sort</button>
+    <button class="nav-browse" onclick="goHome();scrollToId('browse')">Browse bins</button>
+    <button onclick="goHome();scrollToId('swach')">About SWaCH</button>
+  </nav>
+</div></div>
+
+<!-- ============ HOME ============ -->
+<div id="home" class="view active">
+  <div class="hero"><div class="wrap">
+    <h1>Don't bin it blindly. <em>Sort it right.</em></h1>
+    <p class="lead">Type any household item — a chips packet, a milk bag, an old mattress — and find out exactly which bin it belongs in and how to prepare it.</p>
+    <div class="searchbox" id="sb">
+      <div class="field">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7a857d" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="q" type="text" placeholder="Search an item… e.g. PET bottle, diaper, tube light" autocomplete="off">
+        <button class="clr" id="clr" aria-label="Clear">&times;</button>
+      </div>
+      <div class="suggest" id="suggest"></div>
+    </div>
+    <div class="quick"><span>Try:</span>
+      <button onclick="setQ('Chips')">Chips packet</button>
+      <button onclick="setQ('Milk Bag')">Milk bag</button>
+      <button onclick="setQ('Diaper')">Diaper</button>
+      <button onclick="setQ('Mattress')">Old mattress</button>
+      <button onclick="setQ('Battery')">Batteries</button>
+    </div>
+  </div></div>
+
+  <section id="why"><div class="wrap">
+    <div class="s-head">
+      <p class="eyebrow">Why it matters</p>
+      <h2>Sorting at home is the whole game</h2>
+      <p>Once different kinds of waste get mixed and wet, almost none of it can be recovered. A few seconds of sorting at the source keeps materials usable, keeps waste pickers safe, and keeps your neighbourhood out of the landfill.</p>
+    </div>
+    <div class="why">
+      <div class="card"><div class="big">60%+</div><h3>of our waste is wet</h3><p>Food and garden waste can become compost or biogas — but only if it's never mixed with plastic or paper.</p></div>
+      <div class="card"><div class="big">♻️</div><h3>Mixed = wasted</h3><p>A clean PET bottle is recyclable. The same bottle soaked in gravy is just landfill. Empty and dry decides its fate.</p></div>
+      <div class="card"><div class="big">🔴</div><h3>Dignity & safety</h3><p>Wrapping sanitary waste and marking it with a red dot means waste pickers never have to handle it with bare hands.</p></div>
+    </div>
+  </div></section>
+
+  <section id="browse"><div class="wrap">
+    <div class="s-head">
+      <p class="eyebrow">The bins</p>
+      <h2>Learn the colours, then browse</h2>
+      <p>Every item belongs to one stream. Tap a bin to see everything that goes into it.</p>
+    </div>
+    <div class="legend browse-grid" id="binLegend"></div>
+  </div></section>
+
+  <section id="swach"><div class="wrap">
+    <div class="swach">
+      <div>
+        <p class="eyebrow">The people behind the pickup</p>
+        <h2>SWaCH collects what you sort</h2>
+        <p>SWaCH is a cooperative of waste pickers that collects door-to-door across Pune in partnership with the Municipal Corporation. When you segregate properly, their work is safer and far more of your waste actually gets recovered.</p>
+        <p>For dry recyclables, reusable goods and e-waste, many items can be picked up on request through the <b>V-collect</b> drive.</p>
+        <div class="reddot"><b></b> Sanitary waste? Wrap it and draw a red dot.</div>
+      </div>
+      <div>
+        <div class="stat"><div class="n">3 bins, minimum</div><div class="l">Wet · Dry · Sanitary — kept separate from the moment waste is created.</div></div>
+        <div class="stat"><div class="n">📞 9765999500</div><div class="l">V-collect pickup line for donations, dry waste & e-waste.</div></div>
+      </div>
+    </div>
+  </div></section>
+
+  <footer><div class="wrap">
+    <p><b>Sort It</b> — a citizen's guide to waste segregation, built on the Zero Waste Pune database. Disposal routes (SWaCH, V-collect, PMC) are specific to Pune; check your local provider if you're elsewhere. Item icons are illustrative — swap in photos any time.</p>
+  </div></footer>
+</div>
+
+<!-- ============ BROWSE / RESULTS ============ -->
+<div id="browse-view" class="view"><div class="wrap">
+  <button class="backbtn" onclick="goHome()">&larr; Back home</button>
+  <div id="catHero"></div>
+  <div class="toolbar" id="toolbar"></div>
+  <p class="rescount" id="rescount"></p>
+  <div class="items" id="itemGrid"></div>
+</div></div>
+
+<!-- ============ MODAL ============ -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+const ITEMS = [{"name": "Dry Cooked Food/Leftovers (cooked dry sabji, rice, chapati, etc.)", "bin": "Wet", "material": "Food Scraps", "use": "Food/Drink", "status": "Compostable", "prep": "Household quantity manageable, not home chef, not oily, no big chunks", "composting": ["Home compost", "Home biogas", "Society/Industrial compost or biogas"], "donot": ["Do not dispose anything besides the list here.", "No plastic/paper/etc will be accepted even if completely contaminated by food.", "Do not dispose coconut shells and jackfruit", "Do not dispose dry leaves, twigs, branches"], "notes": null, "icon": "🍛"}, {"name": "Rotten Fruits/Vegetable", "bin": "Wet", "material": "Food Scraps", "use": "Food/Drink", "status": "Compostable", "prep": "Small chunks for compost, chopped up", "composting": ["Home compost", "Home biogas", "Society/Industrial compost or biogas"], "donot": [], "notes": null, "icon": "🥦"}, {"name": "Fruit/Vegetable Peels/Stems", "bin": "Wet", "material": "Food Scraps", "use": "Food/Drink", "status": "Compostable", "prep": "Small chunks for compost, stems to be chopped up", "composting": ["Home compost", "Home biogas", "Society/Industrial compost or biogas"], "donot": [], "notes": null, "icon": "🥦"}, {"name": "Wet Food/Leftovers (gravies, vegetable pulp, uncooked egg, etc.)", "bin": "Wet", "material": "Food Scraps", "use": "Food/Drink", "status": "Compostable", "prep": "If liquid — into sink or toilet", "composting": [], "donot": [], "notes": null, "icon": "🥚"}, {"name": "Tea Leaves/Coffee Grounds", "bin": "Wet", "material": "Food Scraps", "use": "Food/Drink", "status": "Compostable", "prep": "Without the tea bags", "composting": ["Home compost", "Home biogas", "Society/Industrial compost or biogas"], "donot": [], "notes": null, "icon": "☕"}, {"name": "Egg Shells", "bin": "Wet", "material": "Food Scraps", "use": "Food/Drink", "status": "Compostable", "prep": "Break down and dispose. Slow. blender", "composting": ["Home compost", "Home biogas", "Society/Industrial compost or biogas"], "donot": [], "notes": null, "icon": "🥚"}, {"name": "Fish Bones", "bin": "Wet", "material": "Food Scraps", "use": "Food/Drink", "status": "Compostable", "prep": "Break down and dispose. Slow. blender", "composting": ["Home compost", "Home biogas", "Society/Industrial compost or biogas"], "donot": [], "notes": null, "icon": "🐟"}, {"name": "Small Bones (chicken, mutton, etc.)", "bin": "Wet", "material": "Food Scraps", "use": "Food/Drink", "status": "Compostable", "prep": "Break down and dispose. Slow", "composting": ["Home compost", "Home biogas", "Society/Industrial compost or biogas"], "donot": [], "notes": null, "icon": "🍖"}, {"name": "Large Bones (mutton, pork, beef, etc.)", "bin": "Wet", "material": "Food Scraps", "use": "Food/Drink", "status": "Compostable", "prep": "If big then shredder", "composting": ["Society/Industrial compost or biogas"], "donot": [], "notes": null, "icon": "🍖"}, {"name": "Green Garden Waste", "bin": "Wet", "material": "Garden Waste", "use": "Garden", "status": "Compostable", "prep": "Small quantities can be crushed and put into compost. can rot or grow in the compost", "composting": ["Home compost", "Home biogas", "Society/Industrial compost or biogas"], "donot": [], "notes": null, "icon": "🍃"}, {"name": "Flowers/Garlands", "bin": "Wet", "material": "Garden Waste", "use": "Home Items", "status": "Compostable", "prep": "separated if it has plastic decoration/thread", "composting": ["Home compost", "Home biogas", "Society/Industrial compost or biogas"], "donot": [], "notes": null, "icon": "🌸"}, {"name": "Oil", "bin": "Wet", "material": "Organic", "use": "Food/Drink", "status": "Compostable", "prep": "Mix with something that absorbs the oil - coffee grounds, leaves. In small quantities only.", "composting": [], "donot": [], "notes": null, "icon": "🫗"}, {"name": "Dry Flour", "bin": "Wet", "material": "Organic", "use": "Food/Drink", "status": "Compostable", "prep": null, "composting": [], "donot": [], "notes": null, "icon": "🌾"}, {"name": "Wet Flour", "bin": "Wet", "material": "Organic", "use": "Food/Drink", "status": "Compostable", "prep": null, "composting": [], "donot": [], "notes": null, "icon": "🌾"}, {"name": "Pulses/Lentils (Uncooked)", "bin": "Wet", "material": "Organic", "use": "Food/Drink", "status": "Compostable", "prep": null, "composting": [], "donot": [], "notes": null, "icon": "🥦"}, {"name": "Large Fruits (Watermelon, Muskmelon, etc.)", "bin": "Wet", "material": "Organic", "use": "Food/Drink", "status": "Compostable", "prep": "Takes longer to decompose, process can be hastened by shredding before disposing", "composting": [], "donot": [], "notes": null, "icon": "🥦"}, {"name": "Finger Nails", "bin": "Wet", "material": "Organic", "use": "Personal", "status": "Compostable", "prep": null, "composting": [], "donot": [], "notes": null, "icon": "💅"}, {"name": "PET Bottles", "bin": "Dry", "material": "Plastic", "use": "Food/Drink", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🍶"}, {"name": "Cement bags", "bin": "Dry", "material": "Plastic", "use": null, "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🪨"}, {"name": "Amazon Bags", "bin": "Dry", "material": "Plastic", "use": null, "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "📦"}, {"name": "Thin Plastic Tray with Chips/Biscuit/Snacks", "bin": "Dry", "material": "Plastic", "use": "Food/Drink", "status": "Very poorly recycled", "prep": "Empty food into the Wet bin · Rinse and dry", "donot": ["Do not dispose with food/drink", "Do not cut/break"], "notes": null, "afterlife": [], "icon": "🍪"}, {"name": "Food Delivery Boxes (Plastic)", "bin": "Dry", "material": "Plastic", "use": "Food/Drink", "status": "Banned", "prep": "Empty food into the Wet bin, liquid into sink or toilet · Rinse and dry", "donot": ["Do not dispose with food/drink", "Do not cut/break"], "notes": null, "afterlife": [], "icon": "🥡"}, {"name": "Milk Bags", "bin": "Dry", "material": "Plastic", "use": "Food/Drink", "status": "Recyclable", "prep": "Empty milk into sink or toilet · Rinse and dry", "donot": ["Do not dispose with food/drink", "Do not cut the corner off. Leave it hanging."], "notes": null, "afterlife": [], "icon": "🥛"}, {"name": "Clear Plastic Sheet", "bin": "Dry", "material": "Plastic", "use": null, "status": "Recyclable", "prep": "Dust off", "donot": [], "notes": null, "afterlife": [], "icon": "📄"}, {"name": "Plastic Bin Liners", "bin": "Dry", "material": "Plastic", "use": "Garbage", "status": "Banned", "prep": "Empty organic waste into the Wet bin (without the liner) · Dust off", "donot": ["Do not use", "Do not use"], "notes": "Prepare wet waste bin without liner", "afterlife": [], "icon": "🗑️"}, {"name": "Compostable Plastic bags and liners", "bin": "Dry", "material": "Plastic", "use": "Bags", "status": "Non-recyclable", "prep": "Empty organic waste into the Wet bin (without the liner) · Dust off", "donot": ["Do not use", "Do not use"], "notes": "Special note: There are 0 facilities in India that can compost compostable plastic as per CPCB. All compostable plastic in India is mishandled.", "afterlife": [], "icon": "🛍️"}, {"name": "Non-woven Plastic Bags", "bin": "Dry", "material": "Plastic", "use": "Bags", "status": "Banned", "prep": "Empty food into the Wet bin · Dust off", "donot": ["Do not use", "Do not use"], "notes": "These are not cloth bags", "afterlife": [], "icon": "🛍️"}, {"name": "Bubble Wrap", "bin": "Dry", "material": "Plastic", "use": "Non-food Packaging", "status": "Recyclable", "prep": "Clean", "donot": [], "notes": null, "afterlife": [], "icon": "🫧"}, {"name": "Plastic dahi dabba", "bin": "Dry", "material": "Plastic", "use": "Food/Drink", "status": "Recyclable", "prep": "Empty dahi into sink or toilet · Rinse and dry", "donot": ["Do not dispose with food/drink"], "notes": null, "afterlife": [], "icon": "🥣"}, {"name": "Single use cutlery", "bin": "Dry", "material": "Plastic", "use": "Food/Drink", "status": "Banned", "prep": "Rinse and dry", "donot": ["Do not dispose with food/drink"], "notes": null, "afterlife": [], "icon": "🍴"}, {"name": "Shampoo bottle", "bin": "Dry", "material": "Plastic", "use": "Personal", "status": "Recyclable", "prep": "Dust off", "donot": [], "notes": null, "afterlife": [], "icon": "🧴"}, {"name": "Detergent bottle", "bin": "Dry", "material": "Plastic", "use": "Cleaning", "status": "Recyclable", "prep": "Dust off", "donot": [], "notes": null, "afterlife": [], "icon": "🧼"}, {"name": "Plastic Furniture", "bin": "Dry", "material": "Plastic", "use": "Home Items", "status": "Very poorly recycled", "prep": "No special instruction", "donot": [], "notes": null, "afterlife": [], "icon": "🪣"}, {"name": "Office Paper (Printed/Blank)", "bin": "Dry", "material": "Paper", "use": "Stationery", "status": "Recyclable", "prep": "If contaminated/wet — Dry waste (can't go in composting) · Dust off", "donot": ["Do not tear to small pieces"], "notes": "Leave intact/Shred", "afterlife": [], "icon": "📃"}, {"name": "Newspaper", "bin": "Dry", "material": "Paper", "use": "Stationery", "status": "Recyclable", "prep": "If contaminated/wet — Dry waste (can't go in composting) · Dust off", "donot": ["Do not tear to small pieces"], "notes": "Leave intact if possible", "afterlife": ["To absorb excess wetness in wet waste transport"], "icon": "📰"}, {"name": "Printed paper boxes", "bin": "Dry", "material": "Paper", "use": "Non-food Packaging", "status": "Poorly recycled", "prep": "Dust off", "donot": [], "notes": null, "afterlife": [], "icon": "📃"}, {"name": "Food Delivery Boxes (Paper without coating)", "bin": "Dry", "material": "Paper", "use": "Food/Drink", "status": "Recyclable", "prep": "Empty food into the Wet bin · Dust off", "donot": ["Do not dispose with food/drink"], "notes": null, "afterlife": [], "icon": "🥡"}, {"name": "Coated + Printed paper boxes", "bin": "Dry", "material": "Paper", "use": "Non-food Packaging", "status": "Poorly recycled", "prep": "Dust off", "donot": [], "notes": null, "afterlife": [], "icon": "📃"}, {"name": "Paper Boxes - Gummed paper tape", "bin": "Dry", "material": "Paper", "use": "Box", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "📦"}, {"name": "Plastic packaging tape", "bin": "Dry", "material": "Paper", "use": "Box", "status": "Non-recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🩹"}, {"name": "Brown paper bags", "bin": "Dry", "material": "Paper", "use": "Bags", "status": "Recyclable", "prep": "Empty food into the Wet bin · Dust off", "donot": ["Do not dispose with wet waste"], "notes": "If contaminated/wet — Dry waste", "afterlife": [], "icon": "📦"}, {"name": "Coated Paper Bags (Lined with plastic)", "bin": "Dry", "material": "Paper", "use": "Bags", "status": "Poorly recycled", "prep": "Dust off", "donot": ["Do not dispose with wet waste"], "notes": "If contaminated/wet — Dry waste", "afterlife": [], "icon": "📦"}, {"name": "Disposable Coated Paper Cups/Plates", "bin": "Dry", "material": "Paper", "use": "Food/Drink", "status": "Poorly recycled", "prep": "Empty food into the Wet bin, liquid into sink or toilet · Dust off", "donot": ["Do not dispose with food/drink"], "notes": "If contaminated/wet — Dry waste", "afterlife": [], "icon": "🥤"}, {"name": "Egg Cartons (only paper mache tray)", "bin": "Dry", "material": "Paper", "use": "Food/Drink", "status": "Poorly recycled", "prep": "Empty rotten egg into sink or toilet/ shells into the Wet bin · Dust off", "donot": ["Do not dispose with food/drink"], "notes": "If contaminated/wet — Dry waste", "afterlife": [], "icon": "🥚"}, {"name": "Corrugated Cartons", "bin": "Dry", "material": "Paper", "use": "Non-food Packaging", "status": "Recyclable", "prep": "Dust off", "donot": [], "notes": null, "afterlife": [], "icon": "📦"}, {"name": "Fibreglass", "bin": "Dry", "material": "Other", "use": "Other", "status": "Non-recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "📄"}, {"name": "Tissues/Paper", "bin": "Dry", "material": "Paper", "use": "Other", "status": "Poorly recycled", "prep": "If contaminated/wet — Dry waste", "donot": [], "notes": null, "afterlife": ["Trash if contaminated"], "icon": "🧻"}, {"name": "Gunny Bags", "bin": "Dry", "material": "Other", "use": "Bags", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🧺"}, {"name": "Chips/Biscuit/Snacks Packet", "bin": "Dry", "material": "Mixed", "use": "Food/Drink", "status": "Very poorly recycled", "prep": "Empty food into the Wet bin, liquid into sink or toilet · Rinse and dry", "donot": ["Do not dispose with food/drink"], "notes": null, "afterlife": ["Recycled only in Pune, mostly sent to cement plants or ends up in landfills. These packets have a mix of different plastics and metal/paper, which makes it challenging to recycle"], "icon": "🍪"}, {"name": "Tetrapack", "bin": "Dry", "material": "Mixed", "use": "Food/Drink", "status": "Very poorly recycled", "prep": "Empty food into the Wet bin, liquid into sink or toilet · Rinse and dry", "donot": ["Do not dispose with food/drink", "Do not cut the corner off. Leave it hanging - YES"], "notes": null, "afterlife": ["These packets have a mix of different plastics and metal/paper, which makes it challenging to recycle"], "icon": "🧃"}, {"name": "Food Delivery Plastic dabbas", "bin": "Dry", "material": "Metal", "use": "Food/Drink", "status": "Recyclable", "prep": "Empty food into the Wet bin, liquid into sink or toilet · Rinse and dry", "donot": ["Do not dispose with food/drink"], "notes": null, "afterlife": [], "icon": "🥡"}, {"name": "Soft Drink/Beer Cans", "bin": "Dry", "material": "Metal", "use": "Food/Drink", "status": "Recyclable", "prep": "Empty drink into sink or toilet · Rinse and dry", "donot": ["Do not dispose with food/drink"], "notes": "Crushed/intact is acceptable", "afterlife": [], "icon": "🍾"}, {"name": "Deodorant Spray", "bin": "Dry", "material": "Metal", "use": "Personal", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🧴"}, {"name": "Hit Spray", "bin": "Dry", "material": "Metal", "use": "Home Items", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🧴"}, {"name": "Spray Paint Bottles (aerosol cans)", "bin": "Dry", "material": "Metal", "use": "Home Items", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🥫"}, {"name": "Food Metal Dabbas", "bin": "Dry", "material": "Metal", "use": "Food/Drink", "status": "Recyclable", "prep": "Empty food into the Wet bin, liquid into sink or toilet · Rinse and dry", "donot": ["Do not dispose with food/drink"], "notes": null, "afterlife": [], "icon": "🍲"}, {"name": "Copper", "bin": "Dry", "material": "Metal", "use": "Home Items", "status": "Recyclable", "prep": "Empty food into the Wet bin, liquid into sink or toilet", "donot": [], "notes": null, "afterlife": [], "icon": "🟠"}, {"name": "Steel", "bin": "Dry", "material": "Metal", "use": "Home Items", "status": "Recyclable", "prep": "Empty food into the Wet bin, liquid into sink or toilet", "donot": [], "notes": null, "afterlife": [], "icon": "🍲"}, {"name": "Aluminium Foil", "bin": "Dry", "material": "Metal", "use": "Food/Drink", "status": "Recyclable", "prep": "Empty food into the Wet bin · Rinse and dry", "donot": ["Do not dispose with food/drink"], "notes": "Crushed/intact is acceptable", "afterlife": ["Trash if soiled"], "icon": "🥫"}, {"name": "Medicine Tablet Strips (Empty) blister packs", "bin": "Dry", "material": "Medical", "use": "Medical", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "💊"}, {"name": "Plastic PPE (Masks, etc.)", "bin": "Dry", "material": "Medical", "use": "Medical", "status": "Non-recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "💊"}, {"name": "Non-plastic PPE (Masks, etc.)", "bin": "Dry", "material": "Medical", "use": "Medical", "status": "Non-recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "💊"}, {"name": "Beer Bottle", "bin": "Dry", "material": "Glass", "use": "Food/Drink", "status": "Recyclable", "prep": "Empty drink into sink or toilet · Rinse and dry", "donot": ["Do not dispose with contents"], "notes": "If broken, inform at pickup — OTHER", "afterlife": [], "icon": "🍾"}, {"name": "Quarter Bottle", "bin": "Dry", "material": "Glass", "use": "Food/Drink", "status": "Recyclable", "prep": "Empty drink into sink or toilet · Rinse and dry", "donot": ["Do not dispose with contents"], "notes": "If broken, inform at pickup — OTHER", "afterlife": [], "icon": "🍾"}, {"name": "Big Alcohol Bottles", "bin": "Dry", "material": "Glass", "use": "Food/Drink", "status": "Recyclable", "prep": "Empty drink into sink or toilet · Rinse and dry", "donot": ["Do not dispose with contents"], "notes": "If broken, inform at pickup — OTHER", "afterlife": [], "icon": "🍾"}, {"name": "Cotton Rags", "bin": "Dry", "material": "Cloth", "use": "Clothes/Footwear", "status": "Non-recyclable", "prep": "Wash and dry", "donot": [], "notes": "Usually get re-used and then disposed (re-used in applications like garages for cleaning grease)", "afterlife": [], "icon": "🧽"}, {"name": "X-ray", "bin": "Dry", "material": "Plastic", "use": "Medical", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "💊"}, {"name": "Bucket/Big Plastic containers", "bin": "Dry", "material": "Plastic", "use": "Home Items", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🪣"}, {"name": "Saline Drip", "bin": "Dry", "material": "Medical", "use": "Medical", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "💊"}, {"name": "Acrylic sheet", "bin": "Dry", "material": "Mixed", "use": "Other", "status": "Very poorly recycled", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "📄"}, {"name": "PVC Flex", "bin": "Dry", "material": "Plastic", "use": "Other", "status": "Banned", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "📄"}, {"name": "Oil dabba", "bin": "Dry", "material": "Metal", "use": "Food/Drink", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🛢️"}, {"name": "Shopping paper bags", "bin": "Dry", "material": "Paper", "use": "Home Items", "status": "Recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "📦"}, {"name": "Medicine Bottles / Vials", "bin": "Dry", "material": "Medical", "use": "Medical", "status": "Very poorly recycled", "prep": "Plastic brown bottles - non recyclable. Not strictly non recyclable - but they don't usually get recycled", "donot": [], "notes": null, "afterlife": [], "icon": "🍷"}, {"name": "Dog/Cat Hair", "bin": "Dry", "material": "Other", "use": "Pet", "status": "Non-recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🐶"}, {"name": "Dust After Sweeping", "bin": "Dry", "material": "Other", "use": "Home Items", "status": "Non-recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🧹"}, {"name": "Hair", "bin": "Dry", "material": "Other", "use": "Personal", "status": "Non-recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "💇"}, {"name": "Cigarette Butts", "bin": "Dry", "material": "Other", "use": "Personal", "status": "Non-recyclable", "prep": null, "donot": [], "notes": null, "afterlife": [], "icon": "🚬"}, {"name": "Sanitary Napkins/Pads", "bin": "Sanitary", "material": "Sanitary", "use": "Personal", "status": "Hand over separately", "prep": "Wrap in Newspaper · Draw Red Dot", "donot": [], "notes": "Mark with a red dot so waste pickers know not to handle it directly.", "icon": "🩸"}, {"name": "Diapers", "bin": "Sanitary", "material": "Sanitary", "use": "Personal", "status": "Hand over separately", "prep": "Wrap in Newspaper · Draw Red Dot", "donot": [], "notes": "Mark with a red dot so waste pickers know not to handle it directly.", "icon": "🧷"}, {"name": "Condoms", "bin": "Sanitary", "material": "Sanitary", "use": "Personal", "status": "Hand over separately", "prep": "Wash and dry", "donot": [], "notes": "Mark with a red dot so waste pickers know not to handle it directly.", "icon": "🚫"}, {"name": "Incontinence Sheets", "bin": "Sanitary", "material": "Sanitary", "use": "Personal", "status": "Hand over separately", "prep": "Wrap in Newspaper · Draw Red Dot", "donot": [], "notes": "Mark with a red dot so waste pickers know not to handle it directly.", "icon": "🛏️"}, {"name": "Tampons", "bin": "Sanitary", "material": "Sanitary", "use": "Personal", "status": "Hand over separately", "prep": "Wrap in newspaper · Draw a red dot", "donot": [], "notes": "Mark with a red dot so waste pickers know not to handle it directly.", "icon": "🩸"}, {"name": "Rubber Chappal", "bin": "Donation", "material": "Other", "use": "Clothes/Shoes/Bags", "status": "Donate / V-collect", "prep": "Clean w/o mud, etc.", "donot": [], "notes": null, "afterlife": ["Resold", "Recycled", "Trash"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "👟"}, {"name": "Shoes", "bin": "Donation", "material": "Mixed", "use": "Clothes/Shoes/Bags", "status": "Donate / V-collect", "prep": "Dust off", "donot": [], "notes": null, "afterlife": ["Rejected"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "👟"}, {"name": "Bags", "bin": "Donation", "material": "Mixed", "use": "Clothes/Shoes/Bags", "status": "Donate / V-collect", "prep": "Dust off", "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "👜"}, {"name": "Toys", "bin": "Donation", "material": "Mixed", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🧸"}, {"name": "Clothes", "bin": "Donation", "material": "Cloth", "use": "Clothes/Footwear", "status": "Donate / V-collect", "prep": "Wash and dry", "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "👕"}, {"name": "Helmet", "bin": "Donation", "material": "Mixed", "use": "Clothes/Footwear", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🪖"}, {"name": "Sports equipment", "bin": "Donation", "material": "Other", "use": "Activities/Hobbies", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "⚽"}, {"name": "Sports Balls", "bin": "Donation", "material": "Other", "use": "Activities/Hobbies", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "⚽"}, {"name": "Plywood Furniture", "bin": "Donation", "material": "Other", "use": "Furniture", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🪑"}, {"name": "Wood Furniture", "bin": "Donation", "material": "Wood", "use": "Furniture", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🪑"}, {"name": "Powder coated Furniture", "bin": "Donation", "material": "Mixed", "use": "Furniture", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🪑"}, {"name": "Upholstered Furniture", "bin": "Donation", "material": "Mixed", "use": "Furniture", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🪑"}, {"name": "Bean Bags", "bin": "Donation", "material": "Mixed", "use": "Furniture", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "👜"}, {"name": "Cotton Mattresses", "bin": "Donation", "material": "Mixed", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["if it's torn given to mattress shops"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🛏️"}, {"name": "Foam/Coir Mattress", "bin": "Donation", "material": "Mixed", "use": "Furniture", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🛏️"}, {"name": "Glassware", "bin": "Donation", "material": "Glass", "use": "Home Items", "status": "Donate / V-collect", "prep": "Wash and dry", "donot": [], "notes": "If broken, inform at pickup — OTHER", "afterlife": ["Good Condition : kept in shop", "Bad condition/ broken : sent to recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🍷"}, {"name": "China dish, melamine dish", "bin": "Donation", "material": "Other", "use": "Home Items", "status": "Donate / V-collect", "prep": "Wash and dry", "donot": [], "notes": "Broken not accepted", "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🍽️"}, {"name": "Musical Instruments", "bin": "Donation", "material": "Reusable", "use": "Activities/Hobbies", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🎸"}, {"name": "Tools", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🔧"}, {"name": "Bicycle, Tricycle,", "bin": "Donation", "material": "Reusable", "use": "Activities/Hobbies", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "⚽"}, {"name": "Walker, Walking stick", "bin": "Donation", "material": "Reusable", "use": "Personal", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🦯"}, {"name": "Car Seat", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "💺"}, {"name": "Photo Frames", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🖼️"}, {"name": "Skate boards, skates", "bin": "Donation", "material": "Reusable", "use": "Activities/Hobbies", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "⚽"}, {"name": "Books/Textbooks", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "📚"}, {"name": "Magazines", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "📖"}, {"name": "Notebooks/Journals", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "📓"}, {"name": "Stationery", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🎁"}, {"name": "Artifacts, showpiece", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🎁"}, {"name": "Deity idols", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": "Broken not accepted", "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🛕"}, {"name": "Carpet", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🟫"}, {"name": "Black Rubber Mat", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🟫"}, {"name": "Mirror", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": "DRY. If broken - treat as hazardous and inform the waste picker when handing it over", "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🍷"}, {"name": "Ice Tray", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🍱"}, {"name": "Jet Spray/Taps", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🚰"}, {"name": "Bucket/Tumbler", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🪣"}, {"name": "Plastic Containers", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🪣"}, {"name": "False Jewellery", "bin": "Donation", "material": "Reusable", "use": "Personal", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "💍"}, {"name": "Planter Plastic", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🪴"}, {"name": "Planter mud", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": "If broken, inform at pickup — OTHER", "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🪴"}, {"name": "Weighing Scale", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "⚖️"}, {"name": "Garden Pipes", "bin": "Donation", "material": "Reusable", "use": "Garden", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🎁"}, {"name": "Ropes", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🪢"}, {"name": "Make-up", "bin": "Donation", "material": "Reusable", "use": "Personal", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "💄"}, {"name": "Wigs", "bin": "Donation", "material": "Reusable", "use": "Personal", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": ["Sold", "recycling"], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "💇"}, {"name": "Ear Phones", "bin": "Donation", "material": "Reusable", "use": "Personal", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🎧"}, {"name": "Home appliances - mixer, iron etc", "bin": "Donation", "material": "Reusable", "use": "Home Items", "status": "Donate / V-collect", "prep": null, "donot": [], "notes": null, "afterlife": [], "contact": "Call for pick-up — V-collect Drive: 9765999500", "icon": "🔌"}, {"name": "Thermocol", "bin": "Thermocol", "material": "Other", "use": "Non-food Packaging", "status": "Hand over separately", "prep": null, "donot": [], "notes": null, "contact": "Call for pick-up - 9021619509 / 9765999500", "icon": "📦"}, {"name": "Styrofoam", "bin": "Thermocol", "material": "Other", "use": "Non-food Packaging", "status": "Not accepted", "prep": null, "donot": [], "notes": null, "contact": null, "icon": "📦"}, {"name": "Coconuts (green and dry brown)", "bin": "Coconuts", "material": "Other", "use": "Food/Drink", "status": "Hand over separately", "prep": null, "donot": ["Do not dispose with food/drink", "Do not dispose into the Wet bin"], "notes": null, "contact": "Call for pickup - SI of the particular prabhag", "icon": "🥥"}, {"name": "Electrical Gadgets", "bin": "E-waste", "material": "E-waste", "use": "Electronics", "status": "Hand over separately", "prep": null, "donot": [], "notes": "Bad condition and other cables, wires : sent to recycling.", "contact": "Call for pick-up/ v collect Drive at 9765999500", "icon": "💡"}, {"name": "Wires", "bin": "E-waste", "material": "E-waste", "use": "Electronics", "status": "Hand over separately", "prep": null, "donot": [], "notes": "Bad condition and other cables, wires : sent to recycling.", "contact": "Call for pick-up/ v collect Drive at 9765999500", "icon": "💡"}, {"name": "Appliances", "bin": "E-waste", "material": "E-waste", "use": "Electronics", "status": "Hand over separately", "prep": null, "donot": [], "notes": "Bad condition and other cables, wires : sent to recycling.", "contact": "Call for pick-up/ v collect Drive at 9765999500", "icon": "🔌"}, {"name": "Switch boards", "bin": "E-waste", "material": "E-waste", "use": "Electronics", "status": "Hand over separately", "prep": null, "donot": [], "notes": null, "contact": "Call for pick-up/ v collect Drive at 9765999500", "icon": "💡"}, {"name": "Tube Lights", "bin": "E-waste", "material": "Mixed", "use": "Home", "status": "Not accepted", "prep": "If broken, inform at pickup — SEPARATE", "donot": [], "notes": "Given to Vendor", "contact": null, "icon": "💡"}, {"name": "Bulb", "bin": "E-waste", "material": "Mixed", "use": "Home", "status": "Not accepted", "prep": "If broken, inform at pickup — SEPARATE", "donot": [], "notes": "Given to Vendor", "contact": null, "icon": "💡"}, {"name": "Paint Cans", "bin": "C&D", "material": "Construction", "use": "Industrial/Construction", "status": "Construction & Demolition", "prep": null, "donot": [], "notes": null, "icon": "🥫"}, {"name": "Construction waste - during renovation", "bin": "C&D", "material": "Construction", "use": "Industrial", "status": "Construction & Demolition", "prep": null, "donot": [], "notes": null, "icon": "🧱"}, {"name": "Construction waste - metal glass and plastic", "bin": "C&D", "material": "Construction", "use": "Industrial", "status": "Construction & Demolition", "prep": null, "donot": [], "notes": null, "icon": "🍷"}, {"name": "Dry Fallen Leaves/Twigs/Weeds (not green)", "bin": "Garden", "material": "Garden", "use": "Garden", "status": "Garden waste", "prep": null, "donot": [], "notes": null, "icon": "🍃"}, {"name": "Soil (From Pots)", "bin": "Garden", "material": "Garden", "use": "Garden", "status": "Garden waste", "prep": "Put in another Pot or in planter beds in society.", "donot": [], "notes": null, "icon": "🪴"}, {"name": "Flowers/Garlands", "bin": "Garden", "material": "Garden", "use": "Garden", "status": "Garden waste", "prep": null, "donot": [], "notes": null, "icon": "🌸"}, {"name": "Chemical Cans", "bin": "Hazardous", "material": "Hazardous", "use": "Industrial/Construction", "status": "Hazardous — inform waste picker", "prep": "Keep closed", "donot": [], "notes": "If leaking — ?", "icon": "🥫"}, {"name": "AAA/AA Batteries", "bin": "Hazardous", "material": "Hazardous", "use": "Home Items", "status": "Hazardous — inform waste picker", "prep": null, "donot": [], "notes": null, "icon": "🔋"}, {"name": "Acid Bottle", "bin": "Hazardous", "material": "Hazardous", "use": "Home Items", "status": "Hazardous — inform waste picker", "prep": "Inform", "donot": [], "notes": null, "icon": "🍷"}, {"name": "Syringes (Plastic + Sharps)", "bin": "Hazardous", "material": "Medical", "use": "Medical", "status": "Hazardous — inform waste picker", "prep": null, "donot": [], "notes": null, "icon": "💉"}, {"name": "Needles (E.g. diabetes injections)", "bin": "Hazardous", "material": "Medical", "use": "Medical", "status": "Hazardous — inform waste picker", "prep": null, "donot": [], "notes": null, "icon": "💉"}, {"name": "Full Vials", "bin": "Hazardous", "material": "Medical", "use": "Medical", "status": "Hazardous — inform waste picker", "prep": null, "donot": [], "notes": null, "icon": "💊"}, {"name": "Cat Litter", "bin": "Special", "material": "Other", "use": "Pet", "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "🐱"}, {"name": "Dog Poop", "bin": "Special", "material": "Other", "use": "Pet", "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "🐶"}, {"name": "Charcoal", "bin": "Special", "material": "Other", "use": null, "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "🔥"}, {"name": "Jackfruit", "bin": "Special", "material": "Other", "use": "Food/Drink", "status": "Handle separately", "prep": "Hand over separately", "donot": ["Do not dispose with food/drink", "Do not dispose into the Wet bin"], "notes": null, "icon": "🍈"}, {"name": "Ash", "bin": "Special", "material": "Other", "use": "Home Items", "status": "Handle separately", "prep": "Small quantities can be added to potting soil · In separate closed bag", "donot": [], "notes": "In small quantities - can go in wet. If large quantity dispose separately", "icon": "🔥"}, {"name": "Disposable Razors", "bin": "Hazardous", "material": "Sharps", "use": "Personal", "status": "Hazardous — inform waste picker", "prep": "Clean + wrap separately · Inform at pickup", "donot": ["Throw among other waste"], "notes": null, "icon": "💉"}, {"name": "Wood", "bin": "C&D", "material": "Wood", "use": "Industrial/Construction", "status": "Construction & Demolition", "prep": "Call for pick-up", "donot": [], "notes": null, "icon": "🪑"}, {"name": "Plywood", "bin": "C&D", "material": "Wood", "use": "Industrial/Construction", "status": "Construction & Demolition", "prep": "Call for pick-up", "donot": [], "notes": null, "icon": "🪑"}, {"name": "Tissue Soiled with Food", "bin": "Wet", "material": "Kitchen", "use": "Food/Drink", "status": "Wet", "prep": null, "donot": [], "notes": "in small qty. tissue better than newspaper. refer to dry waste to know what to do with larger quantity", "icon": "🪴"}, {"name": "Newspaper Soiled with Food", "bin": "Wet", "material": "Kitchen", "use": "Food/Drink", "status": "Wet", "prep": null, "donot": [], "notes": "in small qty. tissue better than newspaper. refer to dry waste to know what to do with larger quantity", "icon": "🪴"}, {"name": "Paper Bowls - Uncoated Biodegradable", "bin": "Wet", "material": "Kitchen", "use": "Food/Drink", "status": "Wet", "prep": null, "donot": [], "notes": null, "icon": "🥤"}, {"name": "Paper Bowls Soiled - Uncoated Biodegradable", "bin": "Wet", "material": "Kitchen", "use": "Food/Drink", "status": "Wet", "prep": null, "donot": [], "notes": null, "icon": "🪴"}, {"name": "Leaf Plates Soiled", "bin": "Wet", "material": "Kitchen", "use": "Food/Drink", "status": "Wet", "prep": null, "donot": [], "notes": null, "icon": "🪴"}, {"name": "Leaf Plates/Areca Nut", "bin": "Wet", "material": "Kitchen", "use": "Food/Drink", "status": "Wet", "prep": null, "donot": [], "notes": "Cut up plates can go into composting. small quantities. shredder for big qty. dry plates can go into garden waste", "icon": "🥤"}, {"name": "Tissue from toilet", "bin": "Special", "material": "Other", "use": null, "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "🧻"}, {"name": "Tissue soiled with food", "bin": "Special", "material": "Other", "use": null, "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "🪴"}, {"name": "Newspaper used for wiping/cleaning", "bin": "Special", "material": "Other", "use": null, "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "📰"}, {"name": "Foam mattress", "bin": "Special", "material": "Other", "use": null, "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "🛏️"}, {"name": "Soiled mattress", "bin": "Special", "material": "Other", "use": null, "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "🪴"}, {"name": "Cuttings of glass sheet, corner cut, left over glass sheet - not taken", "bin": "Special", "material": "Other", "use": null, "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "🍷"}, {"name": "Cloth cuttings found at tailors not taken", "bin": "Special", "material": "Other", "use": null, "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "👕"}, {"name": "Ceramic commode, basin - not taken", "bin": "Special", "material": "Other", "use": null, "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "🚽"}, {"name": "Underwear?", "bin": "Special", "material": "Other", "use": null, "status": "Handle separately", "prep": null, "donot": [], "notes": null, "icon": "🩲"}];
+
+const BINS = {
+  'Wet':{label:'Wet',color:'var(--wet)',ic:'🥬',desc:'Food & garden waste that can be composted'},
+  'Dry':{label:'Dry',color:'var(--dry)',ic:'♻️',desc:'Clean plastic, paper, metal & glass'},
+  'Sanitary':{label:'Sanitary',color:'var(--sanitary)',ic:'🩸',desc:'Pads, diapers & body-fluid waste'},
+  'Donation':{label:'Donate / Reuse',color:'var(--donate)',ic:'🎁',desc:'Usable goods for V-collect pickup'},
+  'E-waste':{label:'E-waste',color:'var(--ewaste)',ic:'🔌',desc:'Gadgets, wires, bulbs & appliances'},
+  'Hazardous':{label:'Hazardous',color:'var(--hazard)',ic:'⚠️',desc:'Batteries, chemicals, sharps & medical'},
+  'Garden':{label:'Garden',color:'var(--garden)',ic:'🍃',desc:'Dry leaves, soil & green trimmings'},
+  'C&D':{label:'Construction',color:'var(--cnd)',ic:'🧱',desc:'Renovation debris & wood'},
+  'Thermocol':{label:'Thermocol',color:'var(--thermocol)',ic:'📦',desc:'Packaging foam — pickup only'},
+  'Coconuts':{label:'Coconuts',color:'var(--coconut)',ic:'🥥',desc:'Shells & husk — separate pickup'},
+  'Special':{label:'Other',color:'var(--special)',ic:'🔶',desc:'Items handled case by case'}
+};
+const BIN_ORDER = ['Wet','Dry','Sanitary','Donation','E-waste','Hazardous','Garden','C&D','Thermocol','Coconuts','Special'];
+
+function badgeClass(s){
+  s=(s||'').toLowerCase();
+  if(s.includes('recyclable')&&!s.includes('non')&&!s.includes('poorly')) return 'b-good';
+  if(s.includes('compostable')||s==='wet') return 'b-good';
+  if(s.includes('donate')) return 'b-good';
+  if(s.includes('banned')||s.includes('hazardous')||s.includes('not accepted')) return 'b-bad';
+  if(s.includes('non-recyclable')||s.includes('poorly')) return 'b-warn';
+  return 'b-neutral';
+}
+
+/* ---------- search ---------- */
+const q=document.getElementById('q'), sb=document.getElementById('sb'), suggest=document.getElementById('suggest'), clr=document.getElementById('clr');
+let activeIdx=-1, curSug=[];
+
+function search(term){
+  term=term.trim().toLowerCase();
+  if(!term) return [];
+  const toks=term.split(/\s+/);
+  return ITEMS.map(it=>{
+    const hay=(it.name+' '+it.material+' '+(it.use||'')+' '+it.bin+' '+(it.status||'')).toLowerCase();
+    let score=0;
+    toks.forEach(t=>{
+      if(it.name.toLowerCase().startsWith(t)) score+=6;
+      else if(it.name.toLowerCase().includes(t)) score+=4;
+      else if(hay.includes(t)) score+=1;
+      else score-=10;
+    });
+    return {it,score};
+  }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).map(x=>x.it);
+}
+
+function renderSuggest(){
+  const term=q.value;
+  if(!term.trim()){suggest.classList.remove('show');return;}
+  curSug=search(term).slice(0,8);
+  if(!curSug.length){
+    suggest.innerHTML='<div class="empty">No match for "'+term.replace(/</g,'&lt;')+'". Try a simpler word, or browse the bins below.</div>';
+    suggest.classList.add('show');return;
+  }
+  suggest.innerHTML=curSug.map((it,i)=>{
+    const b=BINS[it.bin];
+    return '<div class="row'+(i===activeIdx?' active':'')+'" data-i="'+i+'">'+
+      '<span class="ico">'+it.icon+'</span><span class="nm">'+it.name+'</span>'+
+      '<span class="bn" style="background:'+b.color+'">'+b.label+'</span></div>';
+  }).join('');
+  suggest.classList.add('show');
+  suggest.querySelectorAll('.row').forEach(r=>r.onclick=()=>openModal(curSug[+r.dataset.i]));
+}
+
+q.addEventListener('input',()=>{sb.classList.toggle('has',!!q.value);activeIdx=-1;renderSuggest();});
+q.addEventListener('focus',()=>{sb.classList.add('focused');if(q.value)renderSuggest();});
+q.addEventListener('blur',()=>{sb.classList.remove('focused');setTimeout(()=>suggest.classList.remove('show'),150);});
+q.addEventListener('keydown',e=>{
+  if(!suggest.classList.contains('show'))return;
+  if(e.key==='ArrowDown'){e.preventDefault();activeIdx=Math.min(activeIdx+1,curSug.length-1);renderSuggest();}
+  else if(e.key==='ArrowUp'){e.preventDefault();activeIdx=Math.max(activeIdx-1,0);renderSuggest();}
+  else if(e.key==='Enter'){e.preventDefault();if(activeIdx>=0&&curSug[activeIdx])openModal(curSug[activeIdx]);else if(curSug[0])openModal(curSug[0]);}
+  else if(e.key==='Escape'){suggest.classList.remove('show');}
+});
+clr.onclick=()=>{q.value='';sb.classList.remove('has');suggest.classList.remove('show');q.focus();};
+function setQ(t){q.value=t;sb.classList.add('has');q.focus();renderSuggest();}
+
+/* ---------- bin legend ---------- */
+function binCount(b){return ITEMS.filter(it=>it.bin===b).length;}
+document.getElementById('binLegend').innerHTML = BIN_ORDER.map(b=>{
+  const m=BINS[b],c=binCount(b); if(!c)return'';
+  return '<button class="bin" style="background:'+m.color+'" onclick="openBin(\''+b+'\')">'+
+    '<span class="lid"></span><span class="ct">'+c+'</span><span class="ic">'+m.ic+'</span>'+
+    '<span class="nm">'+m.label+'</span><span class="ds">'+m.desc+'</span></button>';
+}).join('');
+
+/* ---------- browse view ---------- */
+let curBin=null,curFilter='All';
+function openBin(b){
+  curBin=b;curFilter='All';
+  const m=BINS[b];
+  document.getElementById('catHero').innerHTML=
+    '<div class="cat-hero" style="background:'+m.color+'"><span class="ic">'+m.ic+'</span>'+
+    '<h2>'+m.label+' waste</h2><p>'+m.desc+'.</p></div>';
+  // material filters for Dry (and any bin with several materials)
+  const inBin=ITEMS.filter(it=>it.bin===b);
+  const mats=[...new Set(inBin.map(it=>it.material).filter(x=>x&&x!=='Mixed'&&x!=='Other'))];
+  const tb=document.getElementById('toolbar');
+  if(b==='Dry'&&mats.length>1){
+    tb.style.display='flex';
+    tb.innerHTML=['All',...mats].map(mt=>'<button class="chip'+(mt==='All'?' on':'')+'" onclick="filterMat(\''+mt+'\')">'+mt+'</button>').join('');
+  } else tb.style.display='none';
+  renderItems();
+  switchView('browse-view');
+  window.scrollTo(0,0);
+}
+function filterMat(mt){curFilter=mt;document.querySelectorAll('#toolbar .chip').forEach(c=>c.classList.toggle('on',c.textContent===mt));renderItems();}
+function renderItems(){
+  let list=ITEMS.filter(it=>it.bin===curBin);
+  if(curFilter!=='All')list=list.filter(it=>it.material===curFilter);
+  list.sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById('rescount').textContent=list.length+' item'+(list.length!==1?'s':'');
+  document.getElementById('itemGrid').innerHTML=list.map((it,i)=>{
+    const b=BINS[it.bin];
+    return '<button class="item" style="border-left-color:'+b.color+'" data-k="'+ITEMS.indexOf(it)+'">'+
+      '<div class="top"><span class="ico">'+it.icon+'</span><span class="nm">'+it.name+'</span></div>'+
+      '<div class="meta"><span class="badge '+badgeClass(it.status)+'">'+it.status+'</span></div></button>';
+  }).join('');
+  document.querySelectorAll('#itemGrid .item').forEach(el=>el.onclick=()=>openModal(ITEMS[+el.dataset.k]));
+}
+
+/* ---------- modal ---------- */
+function openModal(it){
+  const b=BINS[it.bin];
+  let prep=[];
+  if(it.prep) prep=it.prep.split(/ · |·/).map(s=>s.trim()).filter(Boolean);
+  let h='<div class="mhead" style="background:'+b.color+'">'+
+    '<button class="close" onclick="closeModal()">&times;</button>'+
+    '<div class="ic">'+it.icon+'</div><h3>'+it.name+'</h3>'+
+    '<div class="pills"><span class="pill">'+b.ic+' '+b.label+' bin</span>'+
+    '<span class="pill">'+it.status+'</span>'+
+    (it.material&&it.material!=='Mixed'&&it.material!=='Other'?'<span class="pill">'+it.material+'</span>':'')+'</div></div>';
+  h+='<div class="mbody">';
+  if(prep.length){
+    h+='<div class="block"><p class="lab">✅ How to dispose</p><ol class="steps">'+
+      prep.map(s=>'<li>'+s+'</li>').join('')+'</ol></div>';
+  } else {
+    h+='<div class="block"><p class="lab">✅ How to dispose</p><ol class="steps"><li>Place in the '+b.label+' bin.</li></ol></div>';
+  }
+  if(it.composting&&it.composting.length){
+    h+='<div class="block"><p class="lab">🌱 Composts in</p><div class="afterbox"><b>'+it.composting.join('</b> · <b>')+'</b></div></div>';
+  }
+  if(it.donot&&it.donot.length){
+    h+='<div class="block"><p class="lab">⛔ Do not</p><ul class="donots">'+
+      it.donot.map(d=>'<li><span class="x">✕</span><span>'+d+'</span></li>').join('')+'</ul></div>';
+  }
+  if(it.notes){
+    h+='<div class="block"><p class="lab">💡 Good to know</p><div class="notebox">'+it.notes+'</div></div>';
+  }
+  if(it.contact){
+    h+='<div class="block"><div class="contactbox"><span class="ph">📞</span><span>'+it.contact+'</span></div></div>';
+  }
+  if(it.afterlife&&it.afterlife.length){
+    h+='<div class="block"><p class="lab">↻ What happens next</p><div class="afterbox">'+it.afterlife.join(' · ')+'</div></div>';
+  }
+  h+='</div>';
+  document.getElementById('modal').innerHTML=h;
+  document.getElementById('overlay').classList.add('show');
+  document.body.style.overflow='hidden';
+  suggest.classList.remove('show');
+}
+function closeModal(){document.getElementById('overlay').classList.remove('show');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* ---------- view switch ---------- */
+function switchView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function goHome(){switchView('home');window.scrollTo(0,0);}
+function scrollToId(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
+</script>
+</body>
+</html>
